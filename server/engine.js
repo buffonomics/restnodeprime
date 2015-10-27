@@ -14,6 +14,7 @@
 
 
 var http = require("http");
+var https = require('https');
 var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
@@ -135,14 +136,15 @@ function processRequest(request, response) {
  * Start the server engine on a specific port.
  * @param port
  */
-exports.start = function (port) {
-    if (server != null) //Run only one instance of the server per VM
-        return;
+exports.start = function (options, port) {
+
+    if (server != null) return;//Run only one instance of the server per VM
+    if(port == null) port = 8443;
 
     try {
         setup();
 
-        server = http.createServer(preProcessRequest);
+        server = https.createServer(options, preProcessRequest);
         server.listen(port);
         console.log("Server Engine is listening on port " + port);
     }

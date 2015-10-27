@@ -1,7 +1,12 @@
 /**
- * Created by Iyobo on 15-10-26.
+ * ServerConfig Backend app Created by Iyobo Eki on 15-10-26.
  */
 
-var engine = require("./server/engine");
+var engine = require("./server/engine"),
+    fs = require("fs");
 
-engine.start(8001);
+var options = {
+    key: fs.readFileSync('keys/server.key'),
+    cert: fs.readFileSync('keys/server.crt')
+};
+engine.start(options);
