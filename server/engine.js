@@ -21,6 +21,7 @@ var DEFAULT_CONTENT_TYPE = "application/json";
 
 var server;
 var routes = {};
+var MAX_REQUEST_SIZE = 1024*500; //0.5MB max request
 
 /**
  * run through controllers to extract and generate routes
@@ -51,10 +52,11 @@ function setup() {
  */
 function preProcessRequest(request, response) {
     /*
-     DESIGN: Creating a method agnostic params object to the request.
+     DESIGN: Creating a method agnostic params map for the request objectt.
      I have always believed that having separate GET/POST/whatever param stores was an anti-pattern
      as all data sent to a controller, no matter by what means, should be querieable from the same place.
      It is up to the developer to ensure they are not using the same names for their GET / POST(i.e. form) params.
+     If there is a duplication, POST-ish params will win over, followed by URL-ish params (e.g. /path/:id ) which trumps all.
      */
     request.params = {};
 
@@ -63,13 +65,18 @@ function preProcessRequest(request, response) {
     if (typeof getishquery == 'object') request.params = getishquery;
 
     //If this request has post data, wait till it has finished streaming all the data before letting controllers deal with it.
-    /*
-     DESIGN: here might be more methods (i.e. GET/POST/PUT/etc) added in the future hence the need to not assume POST or PUT.
-     */
     if (request.headers["content-length"]) {
         var body = "";
         request.on('data', function (chunk) {
             body += chunk;
+
+            if (body.length > MAX_REQUEST_SIZE) {
+                //Possible abuse. Kill connection if request too large.
+                response.writeHead(413, {"Content-Type": "text/html"});
+                response.write("Request Too Large");
+                response.end();
+                request.connection.destroy(); //Just to be sure.
+            }
         });
         request.on('error', function (e) {
             console.error('problem with request: ' + e.message);
@@ -78,14 +85,12 @@ function preProcessRequest(request, response) {
             console.log('Finished reading request data...');
 
             /*
-             DESIGN: Merge POST-ish params with any GET-ish params. As mentioned above, This will overwrite any GET-ish params of same name.
+             DESIGN: Merge newly acquired POST-ish params with any GET-ish params. As mentioned above, This will overwrite any GET-ish params of same name.
              */
             body = qs.parse(body);
             for (var p in body) {
                 request.params[p] = body[p];
             }
-
-            console.log(request.params);
 
             //continue to request
             processRequest(request, response);
