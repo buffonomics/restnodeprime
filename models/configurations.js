@@ -1,8 +1,8 @@
 /*
- A Self-contained model (or DAO) and datasource for Server Configurations.
+ A Self-contained DAO and datasource for Server Configurations.
  */
-var msgs = require("../server/status");
-var validator = require("../server/validator");
+var status = require("../server/utils/status");
+var validator = require("../server/utils/validator");
 
 //DESIGN: Datasource would/should be indexed by name in DB so...
 var db = {
@@ -26,35 +26,39 @@ var db = {
  * @returns {*[]}
  */
 exports.list = function (options) {
-    var result = [];
+    var configs = [];
 
-    for (k, v in db) {
+    for (k in db) {
 
         //TODO: filtering and paging
         //OR...Do a sort-sensitive push to avoid sorting step
-        result.push(v);
+        configs.push(db[k]);
     }
 
     //TODO: sorting
 
+    //packaging
+    var result = {"configurations": configs};
     return result;
 }
 
 exports.create = function (params) {
 
     var rules = {"required": ["name", "hostname", "port", "username"]};
-    var valid_dict = validator.sanitizeParams(rules, params);
-    if (!valid_dict || typeof valid_dict == "string") {
+    var validation_result = validator.sanitizeParams(rules, params);
+    if (!validation_result || !validation_result.success) {
         //not valid
-        return messageUtil.error(valid_dict);
+        return status.error(validation_result["message"],validation_result["code"]);
     }
-    else if (db[valid_dict.name]) {
+
+    var valid = validation_result.result;
+    if (db[valid.name]) {
         //Treat config name as unique
-        return messageUtil.error("A config with the name"+valid_dict.name+" already exists. Please use another name.");
+        return status.error("A config with the name '"+valid.name+"' already exists. Please use another name.");
     }
     else {
-        db.push(valid_dict);
-        return messageUtil.success(valid_dict);
+        db[valid.name]= valid;
+        return status.success(valid);
     }
 
 }
@@ -67,21 +71,22 @@ exports.delete = function (name) {
 
 exports.update = function (params) {
     var rules = {"required": ["name"], "optional": ["hostname", "port", "username"]};
-    var valid_dict = validator.sanitizeParams(rules, params);
+    var validation_result = validator.sanitizeParams(rules, params);
 
-    if (!valid_dict || typeof valid_dict == "string") {
+    if (!validation_result || !validation_result.success) {
         //not valid
-        return messageUtil.error(valid_dict);
+        return status.error(validation_result["message"],validation_result["code"]);
     }
-    var id = valid_dict.name;
-    if (!db[id]){
+
+    var valid = validation_result.result;
+    if (!db[valid.name]){
         //cannot update if it doesn't exist
-        return messageUtil.error(id +" not found. Cannot update.");
+        return status.error(valid.name +" not found. Cannot update.");
     }
     else
     {
         //all good
-        db[id] = valid_dict;
-        return messageUtil.success(id+" updated.");
+        db[valid.name] = valid;
+        return status.success(valid.name+" updated.");
     }
 }

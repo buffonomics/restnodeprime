@@ -1,7 +1,7 @@
 /**
  * Created by Iyobo on 15-10-27.
  */
-var status = require("../server/utils/status")
+var status = require("./status")
 /**
  * Highly recommended to use this on all user/external param inputs. To ensures you are only getting relevant data.
  * Currently implemented rules are: required, and optional.

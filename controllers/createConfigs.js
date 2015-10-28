@@ -1,6 +1,6 @@
 var configurations = require("../models/configurations");
 var status = require("../server/utils/status");
-var validator = require("../server/validator");
+var validator = require("../server/utils/validator");
 
 /**
  * The route that leads to this controller.

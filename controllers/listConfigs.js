@@ -5,7 +5,7 @@ var configurations = require("../models/configurations")
  * @returns {string}
  */
 exports.route = function(){
-    return "/configs"
+    return "/configs/list"
 };
 
 /**
