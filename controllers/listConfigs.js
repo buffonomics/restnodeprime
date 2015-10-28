@@ -5,7 +5,7 @@ var configurations = require("../models/configurations")
  * @returns {string}
  */
 exports.route = function(){
-    return "/configs/list"
+    return "/configs"
 };
 
 /**
@@ -15,8 +15,6 @@ exports.route = function(){
  * @param id
  */
 exports.action = function(request, response, id){
-    var data = {"configurations":configurations.list()};
-    response.write(JSON.stringify(data) );
+    response.write(JSON.stringify(configurations.list()) );
     response.end();
-
 }

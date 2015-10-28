@@ -22,7 +22,7 @@ var DEFAULT_CONTENT_TYPE = "application/json";
 
 var server;
 var routes = {};
-var MAX_REQUEST_SIZE = 1024*500; //0.5MB max request
+var MAX_REQUEST_SIZE = 1024 * 500; //0.5MB max request
 
 /**
  * run through controllers to extract and generate routes
@@ -83,8 +83,7 @@ function preProcessRequest(request, response) {
             console.error('problem with request: ' + e.message);
         });
         request.on('end', function () {
-            console.log('Finished reading request data...');
-
+            //console.log('Finished reading request data...');
             /*
              DESIGN: Merge newly acquired POST-ish params with any GET-ish params. As mentioned above, This will overwrite any GET-ish params of same name.
              */
@@ -114,11 +113,10 @@ function processRequest(request, response) {
 
     if (controller == undefined) {
         //No match found
-        response.writeHead(404, {"Content-Type": "text/html"});
         response.write("<h1>404: Not Found</h1>");
+        response.end();
     }
     else {
-
         //Determine content-type
         var contentType = DEFAULT_CONTENT_TYPE;
         if (controller.contentType) contentType = controller.contentType();
@@ -139,7 +137,7 @@ function processRequest(request, response) {
 exports.start = function (options, port) {
 
     if (server != null) return;//Run only one instance of the server per VM
-    if(port == null) port = 8443;
+    if (port == null) port = 8443;
 
     try {
         setup();
