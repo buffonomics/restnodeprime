@@ -21,7 +21,7 @@ exports.contentType = function(){
  * @param response
  * @param id
  */
-exports.action = function(request, response, id){
+exports.get = function(request, response){
     // DESIGN: Alternatively, I could also cache all HTML within the html folder upon launch in engine.setup(),
     // but this is better for development. Can be a production-config thing later.
     fs.readFile('./html/index.html', function (err, html) {

@@ -1,14 +1,16 @@
-/*
+/**
  Server Engine by Iyobo Eki
 
  This prepares all controllers, extracts/generate their routes, and makes a map of them all.
 
  All controller modules MUST be in the controllers folder and shall export the following:
 
- Required:
+ ANATOMY OF A CONTROLLER
+ ::REQUIRED::
  route: Return the url route that should point to this controller.
- action: Perform all major processing and modify response object as needed.
- `Optional
+ *method function (e.g. get, post, patch, delete): Perform all major processing based on the request method and modify response object as needed.
+
+ ::OPTIONAL::
  contentType: The mimeType for the response associated with the controller. Default: "application/json"
  */
 
@@ -23,7 +25,7 @@ var DEFAULT_CONTENT_TYPE = "application/json";
 
 var server;
 var routes = {};
-var MAX_REQUEST_SIZE = 1024 * 500; //0.5MB max request
+var MAX_REQUEST_SIZE = 1024 * 2000; //2MB max request
 
 /**
  * run through controllers to extract and generate routes
@@ -124,16 +126,23 @@ function processRequest(request, response) {
         response.end();
     }
     else {
+        //Determine method
+        var method = request.method.toLowerCase();
+
         //Determine content-type
         var contentType = DEFAULT_CONTENT_TYPE;
         if (controller.contentType) contentType = controller.contentType();
         response.writeHead(200, {"Content-Type": contentType});
 
-        //TODO: Determine id if it exists
-        var id;
-
-        //run controller action
-        controller.action(request, response, id)
+        //run appropriate controller method
+        var action = controller[method];
+        if(typeof action === 'function') {
+            action(request, response);
+        }
+        else
+        {
+            status.errorToResponse(response,"Resource Not Found",404);
+        }
     }
 }
 
@@ -141,17 +150,17 @@ function processRequest(request, response) {
  * Start the server engine on a specific port.
  * @param port
  */
-exports.start = function (options, port) {
+exports.start = function (options) {
 
     if (server != null) return;//Run only one instance of the server per VM
-    if (port == null) port = 8443;
+    var port = options["port"]?options["port"]:8443;
 
     try {
         setup();
 
         server = https.createServer(options, preProcessRequest);
         server.listen(port);
-        console.log("Server is listening on port " + port);
+        console.log("Server is listening on HTTPS port " + port);
     }
     catch (err) {
         console.log(err);

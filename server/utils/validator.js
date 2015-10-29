@@ -1,10 +1,12 @@
 /**
  * Created by Iyobo on 15-10-27.
  */
-var status = require("./status")
+var status = require("./status");
 /**
  * Highly recommended to use this on all user/external param inputs. To ensures you are only getting relevant data.
- * Currently implemented rules are: required, and optional.
+ * Currently implemented rules are: required, optional.
+ *
+ * ::RULES::
  *
  * Required: These attributes must exist in the params, otherwise declare the whole param input invalid.
  * Also helpfully notifies which attributes are missing.

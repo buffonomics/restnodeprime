@@ -22,6 +22,7 @@ function error( message, code){
  * @param code
  */
 exports.errorToResponse = function (response, message, code){
+    if(code) response.statusCode = code;
     response.write(JSON.stringify(error(message,code)));
 }
 

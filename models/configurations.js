@@ -59,21 +59,20 @@ exports.list = function (params) {
         for (k in db) {
             var item = db[k];
             var allowed = true;
-            for (f in filters){
-                if(filters[f] && item[f] != filters[f]) allowed=false;
+            for (f in filters) {
+                if (filters[f] && item[f] != filters[f]) allowed = false;
             }
 
-            if(allowed) configs.push(item);
+            if (allowed) configs.push(item);
         }
     }
-    else
-    {
+    else {
         for (k in db) {
             configs.push(db[k]);
         }
     }
     metadata["total"] = configs.length
-    metadata["totalPages"]= Math.ceil(configs.length/limit);
+    metadata["totalPages"] = Math.ceil(configs.length / limit);
 
     //Sorting
     var sort = params["sort"];
@@ -132,11 +131,14 @@ exports.create = function (params) {
 exports.delete = function (name) {
     //find and take out configuration named...
     delete db[name];
-    return messageUtil.success(name + ": deleted.");
+    return status.success(name + ": deleted.");
 }
 
-exports.update = function (params) {
+exports.update = function (params, partial) {
     var rules = {"required": ["name"], "optional": ["hostname", "port", "username"]};
+
+    if (partial) rules["fillOptional"] = false;
+
     var validation_result = validator.sanitizeParams(rules, params);
 
     if (!validation_result || !validation_result.success) {
@@ -150,8 +152,16 @@ exports.update = function (params) {
         return status.error(valid.name + " not found. Cannot update.");
     }
     else {
-        //all good
-        db[valid.name] = valid;
+        if (partial) {
+            //Update only what was requested
+            for (v in valid){
+                db[valid.name][v] = valid[v];
+            }
+        }
+        else {
+            //Do full update
+            db[valid.name] = valid;
+        }
         return status.success(valid.name + " updated.");
     }
 }

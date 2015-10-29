@@ -14,13 +14,7 @@ exports.route = function(){
  * @param response
  * @param id
  */
-exports.action = function(request, response, id){
-
-    //request.on('data', function (chunk) {
-    //    console.log('BODY: ' + chunk);
-    //});
-    response.write(JSON.stringify({name: "Login", mood: "jerk-ish"}));
-
+exports.get = function(request, response){
+    response.write(JSON.stringify({message: "This is a REST server. Please use POST for this"}));
     response.end();
-
 }

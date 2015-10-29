@@ -9,13 +9,12 @@ exports.route = function(){
 };
 
 /**
- * Responses get written to here.
+ * Get single/multiple configs
  * @param request
  * @param response
  * @param id
  */
-exports.action = function(request, response){
-
+exports.get = function(request, response){
     response.write(JSON.stringify(configurations.list(request.params)) );
     response.end();
 }
