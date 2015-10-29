@@ -11,6 +11,8 @@ var status = require("./status")
  *
  * Optional: Besides the requireds, These attributes are the only other attributed permitted to exist in the sanitized params returned by this function.
  *
+ * fillOptional: Determines whether the resulting map from optional attributes should have optional undefined keys defined with null values. Default is true.
+ *
  * @example: {"required": ["name"], "optional": ["hostname", "port", "username"]}
  *
  * @param rules : A map of sanitization rules.
@@ -42,10 +44,14 @@ exports.sanitizeParams = function(rules,params){
 
     //optional step: ..... Unimplemented/unneeded for challenge.
     var optional = rules["optional"];
+    var filloptional = rules["fillOptional"]?rules["fillOptional"]: true;
     if(optional) {
         for (i in optional) {
             var attr = optional[i];
-            result[attr] = params[attr];
+
+            if(filloptional || params[attr])
+                result[attr] = params[attr];
+
         }
     }
 
