@@ -14,7 +14,8 @@ exports.route = function(){
  * @param response
  * @param id
  */
-exports.action = function(request, response, id){
-    response.write(JSON.stringify(configurations.list()) );
+exports.action = function(request, response){
+
+    response.write(JSON.stringify(configurations.list(request.params)) );
     response.end();
 }

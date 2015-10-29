@@ -4,7 +4,7 @@
 var status = require("../server/utils/status");
 var validator = require("../server/utils/validator");
 
-//DESIGN: Datasource would/should be indexed by name in DB so...
+//DESIGN: Datasource should really be indexed by name in DB so...
 var db = {
     "host1": {
         "name": "host1",
@@ -22,7 +22,7 @@ var db = {
 
 /**
  *
- * @param options contains WHERE , PAGE, SORT_BY, and SORT_DIRECTION
+ * @param options contains where , page and sort
  * @returns {*[]}
  */
 exports.list = function (options) {
@@ -35,7 +35,26 @@ exports.list = function (options) {
         configs.push(db[k]);
     }
 
-    //TODO: sorting
+    //Sorting
+    var sort = options["sort"];
+    if(sort){
+        //Determine direction i.e. name (asc) or -name (desc)
+        var sort_asc = true;
+        if(sort.indexOf("-") === 0){
+            sort_asc = false; // descending
+            sort = sort.substring(1); //remove dash now that we know direction
+        }
+
+        //Do sort
+        configs.sort(function compare(a,b) {
+            if (a[sort] < b[sort])
+                return sort_asc? -1: 1;
+            if (a[sort] > b[sort])
+                return sort_asc? 1 : 1;
+            return 0;
+        })
+
+    }
 
     //packaging
     var result = {"configurations": configs};

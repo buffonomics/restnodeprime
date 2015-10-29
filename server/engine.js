@@ -110,6 +110,12 @@ function preProcessRequest(request, response) {
 function processRequest(request, response) {
     //parse url
     var requrl = url.parse(request.url, true);
+
+    /**
+     * DESIGN: I chose to use a hashtable/dictionary for this as opposed
+     * to regex because regex URL matching really isn't needed for this challenge.
+     * Can be easily modified to match using regex, along with going the traditional "route file" way.
+     */
     var controller = routes[requrl.pathname];
 
     if (controller == undefined) {
@@ -145,7 +151,7 @@ exports.start = function (options, port) {
 
         server = https.createServer(options, preProcessRequest);
         server.listen(port);
-        console.log("Server Engine is listening on port " + port);
+        console.log("Server is listening on port " + port);
     }
     catch (err) {
         console.log(err);
