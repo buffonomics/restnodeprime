@@ -1,4 +1,4 @@
-var configurations = require("../models/configurations");
+var configurations = require("../data/configurations");
 var status = require("../server/utils/status");
 var validator = require("../server/utils/validator");
 
@@ -10,6 +10,13 @@ exports.route = function () {
     return "/configs/create"
 };
 
+/**
+ * This signifies that this controller requires authentication to be accessed.
+ * @returns {boolean}
+ */
+exports.protected = function () {
+    return true;
+};
 
 /**
  * Creates a config. Expected params are name, hostname, port, and username.

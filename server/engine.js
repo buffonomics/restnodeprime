@@ -21,11 +21,14 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 var status = require("./utils/status");
+var authPreprocessor = require("./preprocessors/authPreprocessor");
 var DEFAULT_CONTENT_TYPE = "application/json";
 
 var server;
 var routes = {};
 var MAX_REQUEST_SIZE = 1024 * 2000; //2MB max request
+
+var sessions = {};
 
 /**
  * run through controllers to extract and generate routes
@@ -46,15 +49,14 @@ function setup() {
                 routes[route] = controller;
         });
     });
-
 }
 
 /**
- * Calls processRequest() after some request pre-processing.
+ * Calls processRequest() after loading params as needed.
  * @param request
  * @param response
  */
-function preProcessRequest(request, response) {
+function loadParams(request, response) {
     /*
      DESIGN: Creating a method agnostic params map for the request objectt.
      I have always believed that having separate GET/POST/whatever param stores was an anti-pattern
@@ -118,7 +120,8 @@ function processRequest(request, response) {
      * to regex because regex URL matching really isn't needed for this challenge.
      * Can be easily modified to match using regex, along with going the traditional "route file" way.
      */
-    var controller = routes[requrl.pathname];
+    var pathname = requrl.pathname.replace(/\/$/, '');
+    var controller = routes[pathname];
 
     if (controller == undefined) {
         //No match found
@@ -132,17 +135,21 @@ function processRequest(request, response) {
         //Determine content-type
         var contentType = DEFAULT_CONTENT_TYPE;
         if (controller.contentType) contentType = controller.contentType();
-        response.writeHead(200, {"Content-Type": contentType});
+        response.statusCode = 200;
+        response.setHeader("Content-Type", contentType);
+        //response.writeHead(200, {"Content-Type": contentType});
 
         //run appropriate controller method
-        var action = controller[method];
-        if(typeof action === 'function') {
-            action(request, response);
-        }
-        else
-        {
-            status.errorToResponse(response,"Resource Not Found",404);
-        }
+        authPreprocessor.process(request, response, controller, function () {
+            var action = controller[method];
+            if (typeof action === 'function') {
+                action(request, response);
+            }
+            else {
+                status.errorToResponse(response, "Resource Not Found", 404);
+            }
+        })
+
     }
 }
 
@@ -153,12 +160,12 @@ function processRequest(request, response) {
 exports.start = function (options) {
 
     if (server != null) return;//Run only one instance of the server per VM
-    var port = options["port"]?options["port"]:8443;
+    var port = options["port"] ? options["port"] : 8443;
 
     try {
         setup();
 
-        server = https.createServer(options, preProcessRequest);
+        server = https.createServer(options, loadParams);
         server.listen(port);
         console.log("Server is listening on HTTPS port " + port);
     }

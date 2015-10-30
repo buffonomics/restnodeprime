@@ -1,4 +1,4 @@
-var configurations = require("../models/configurations");
+var configurations = require("../data/configurations");
 var status = require("../server/utils/status");
 
 /**
@@ -9,6 +9,13 @@ exports.route = function(){
     return "/configs/delete"
 };
 
+/**
+ * This signifies that this controller requires authentication to be accessed.
+ * @returns {boolean}
+ */
+exports.protected = function () {
+    return true;
+};
 
 /**
  * Deletes a config.

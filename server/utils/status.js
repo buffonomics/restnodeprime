@@ -24,6 +24,7 @@ function error( message, code){
 exports.errorToResponse = function (response, message, code){
     if(code) response.statusCode = code;
     response.write(JSON.stringify(error(message,code)));
+    response.end();
 }
 
 /**
@@ -33,6 +34,7 @@ exports.errorToResponse = function (response, message, code){
  */
 exports.successToResponse = function (response, result){
     response.write(JSON.stringify(success(result)));
+    response.end();
 }
 
 exports.success = success;

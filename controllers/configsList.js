@@ -1,4 +1,4 @@
-var configurations = require("../models/configurations")
+var configurations = require("../data/configurations")
 
 /**
  * The route that leads to this controller.
@@ -6,6 +6,14 @@ var configurations = require("../models/configurations")
  */
 exports.route = function(){
     return "/configs/list"
+};
+
+/**
+ * This signifies that this controller requires authentication to be accessed.
+ * @returns {boolean}
+ */
+exports.protected = function () {
+    return true;
 };
 
 /**
