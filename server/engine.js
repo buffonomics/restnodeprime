@@ -49,6 +49,9 @@ function setup() {
                 routes[route] = controller;
         });
     });
+
+    //Generate Server Configs
+    require("../data/configurations").generate(100);
 }
 
 /**

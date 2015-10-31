@@ -22,7 +22,7 @@ exports.process = function (request, response, controller, callback) {
     var authRequired = controller.protected ? controller.protected() : false;
     if (authRequired) {
         var authHeaders = request.headers['authorization'];  // auth is in base64(username:password)  so we need to verify the base64
-        console.log("Authorization Header is: ", authHeaders);
+        console.log("Authorization Header: ", authHeaders);
 
         if (authHeaders) {
             cipher.verify(request, response,

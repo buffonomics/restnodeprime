@@ -4,7 +4,7 @@ var fs = require('fs');
  * @returns {string}
  */
 exports.route = function(){
-    return "/";
+    return "";
 };
 
 /**
@@ -28,7 +28,6 @@ exports.get = function(request, response){
         if (err) {
             throw err;
         }
-
         response.write(html);
         response.end();
     });

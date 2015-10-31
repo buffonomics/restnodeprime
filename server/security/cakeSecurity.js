@@ -3,13 +3,13 @@ var users = require("../../data/users");
 var sessions = require("../../data/sessions")
 var crypto = require('crypto'),
     crypto_algo = 'sha1',
-    key = "The cake is a lie, but the pie...now there's an honest chap";
+    key = "The cake is a lie, but the pie?...now there's an honest fellow";
 
 //Create an authentication token
 exports.createToken = function (request, response, callback, errorCallback) {
     var params = request.params;
     if (users.authenticate(params.username, params.password)) {
-        //Generate the auth token and send back as JWT to client
+        //Generate the auth token and expire in 24 hrs
         var expires = new Date();
         expires.setDate(expires.getDate() + 1);
         expires = expires.getTime();
@@ -17,7 +17,7 @@ exports.createToken = function (request, response, callback, errorCallback) {
         var combo = params.username + ":>" + params.password + ":>cake" + expires;
         var token = crypto.createHmac(crypto_algo, key).update(combo).digest("hex");
         response.setHeader("Authentication", "cake " + token);
-        sessions.add(token, expires, request.connection.remoteAddress);
+        sessions.add(token, params.username, expires, request.connection.remoteAddress);
         callback(request, response, token);
     }
     else {

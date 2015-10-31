@@ -6,7 +6,7 @@ var status = require("../server/utils/status")
  * @returns {string}
  */
 exports.route = function(){
-    return "/logout"
+    return "/api/v1/logout"
 };
 
 /**

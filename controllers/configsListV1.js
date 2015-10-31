@@ -5,7 +5,7 @@ var configurations = require("../data/configurations")
  * @returns {string}
  */
 exports.route = function(){
-    return "/configs/list"
+    return "/api/v1/configs/list"
 };
 
 /**

@@ -6,7 +6,7 @@ var security = require("../server/security/cakeSecurity")
  * @returns {string}
  */
 exports.route = function () {
-    return "/login"
+    return "/api/v1/login"
 };
 
 function notAuthorized(response) {

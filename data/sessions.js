@@ -2,8 +2,8 @@ var db={
 
 }
 
-exports.add=function(token, expires,ip){
-    db[token] = {"token": token, "expires": expires, "active":true, "ip":ip};
+exports.add=function(token, username, expires,ip){
+    db[token] = {"token": token, "username": username, "expires": expires, "active":true, "ip":ip};
 }
 
 exports.get=function(token){

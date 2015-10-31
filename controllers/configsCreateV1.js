@@ -7,7 +7,7 @@ var validator = require("../server/utils/validator");
  * @returns {string}
  */
 exports.route = function () {
-    return "/configs/create"
+    return "/api/v1/configs/create"
 };
 
 /**
