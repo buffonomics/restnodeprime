@@ -15,6 +15,7 @@ exports.route = function(){
  * @param id
  */
 exports.get = function(request, response){
-    response.write(JSON.stringify({message: "This is a REST server. Please use POST for this"}));
+    response.setHeader("Authentication",null);
+    response.write(JSON.stringify({message: "You have been logged out"}));
     response.end();
 }
