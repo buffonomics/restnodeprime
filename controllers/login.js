@@ -1,7 +1,5 @@
 var status = require("../server/utils/status");
-var crypto = require("crypto");
-var users = require("../data/users");
-var cipher = require("../server/security/cakeSecurityCipher")
+var security = require("../server/security/cakeSecurity")
 
 /**
  * The route that leads to this controller.
@@ -24,18 +22,9 @@ function notAuthorized(response) {
  * @param response
  * @param id
  */
-exports.get = function (request, response) {
-    //var authHeaders = request.headers['authorization'];  // auth is in base64(username:password)  so we need to decode the base64
-    //if (authHeaders) {
-    //    //return same as else?
-    //    status.successToResponse(response,{message:"You are already Logged in."})
-    //}
-    //else{
-    //
-    //}
-
-    cipher.encode(request, response,
-        function (request, response) {
+exports.post = function (request, response) {
+    security.createToken(request, response,
+        function (request, response, token) {
             status.successToResponse(response,{message:"You successfully logged in"});
         },
         function (request, callback) {

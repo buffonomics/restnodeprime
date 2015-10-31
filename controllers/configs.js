@@ -18,7 +18,7 @@ exports.delete = require("./configsDelete").delete;
 
 
 exports.get = function (req, res) {
-    var auth = req.headers['authorization'];  // auth is in base64(username:password)  so we need to decode the base64
+    var auth = req.headers['authorization'];  // auth is in base64(username:password)  so we need to verify the base64
     console.log("Authorization Header is: ", auth);
 
     if (!auth) {     // No Authorization header was passed in so it's the first time the browser hit us

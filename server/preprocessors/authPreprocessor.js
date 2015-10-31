@@ -1,6 +1,6 @@
 var status = require("../utils/status");
 var users = require("../../data/users");
-var cipher = require("../security/cakeSecurityCipher");
+var cipher = require("../security/cakeSecurity");
 
 
 function notAuthorized(response) {
@@ -21,11 +21,11 @@ exports.process = function (request, response, controller, callback) {
     //Determine need for auth
     var authRequired = controller.protected ? controller.protected() : false;
     if (authRequired) {
-        var authHeaders = request.headers['authorization'];  // auth is in base64(username:password)  so we need to decode the base64
+        var authHeaders = request.headers['authorization'];  // auth is in base64(username:password)  so we need to verify the base64
         console.log("Authorization Header is: ", authHeaders);
 
         if (authHeaders) {
-            cipher.decode(request, response,
+            cipher.verify(request, response,
                 function (request, response) {
                     response.statusCode = 200;  // OK
                     callback(request, response);

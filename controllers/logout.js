@@ -1,4 +1,5 @@
-
+var security = require("../server/security/cakeSecurity");
+var status = require("../server/utils/status")
 
 /**
  * The route that leads to this controller.
@@ -15,7 +16,7 @@ exports.route = function(){
  * @param id
  */
 exports.get = function(request, response){
-    response.setHeader("Authentication",null);
-    response.write(JSON.stringify({message: "You have been logged out"}));
-    response.end();
+    security.logout(request,response, function(request, response){
+        status.successToResponse(response,"",204);
+    })
 }
